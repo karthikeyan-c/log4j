@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30" name="finbranch">
+	<properties>
+		<property name="install_home">$${sys:FINACLE_INSTALL_HOME:-webapps/finbranch}</property>
+		<property name="exec_mode">$${sys:EXEC_MODE:-J2EE}</property>
+		<property name="fininfra_logger_host">$${sys:FININFRA_LOGGER_HOST:-localhost}</property>
+		<property name="fininfra_logger_port">$${sys:FININFRA_LOGGER_PORT:-5601}</property>
+		<Property name="fi_LogLevel">$${sys:FI_LOGGER_LEVEL:-warn}</Property>
+		<Property name="ConnPool_Level">$${sys:CONNPOOL_LOGGER_LEVEL:-ALL}</Property>
+		<Property name="CoreLog_Level">$${sys:CORELOG_LOGGER_LEVEL:-TRACE}</Property>
+		<Property name="UXLog_Level">$${sys:UXLOG_LOGGER_LEVEL:-ALL}</Property>
+		<Property name="SecureFilter_Level">$${sys:SECUFILTER_LOGGER_LEVEL:-ALL}</Property>
+		<Property name="RootLog_Level">$${sys:ROOT_LOGGER_LEVEL:-NONE}</Property>
+	</properties>
+    <Appenders>
+       <Console name="appender-Console1" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyyMMdd'T'HH:mm:ss.SSSZ} [%t] %-5level %logger{36} - %msg%n" />
+        </Console> 
+        <Http name="Http" url="http://elasticsearch-loadbalancer.es.svc.cluster.local/applogs/_doc">
+            <Property name="Content-Type" value="application/json" />
+            <PatternLayout pattern="%msg%n" />
+        </Http>
+
+        <!--  -->
+        <RollingFile name="ConnPoolApndr" fileName="${install_home}/common/log/finbranch/FINCORE_ConnPool.log" append="true" 
+        	filePattern="${install_home}/common/log/finbranch/FINCORE_$${date:yyyy-MM}/ConnPool-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyyMMdd 'T' HH:mm:ss.SSSZ} [%t - %T] %pid %msg%n%rException" />
+                 <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+       <DefaultRolloverStrategy>
+        <Delete basePath="${install_home}/common/log/finbranch" maxDepth="2">
+          <IfFileName glob="*/*.log.gz" />
+          <IfLastModified age="30d" />
+        </Delete>
+      </DefaultRolloverStrategy>  
+        </RollingFile>
+
+		   
+        <RollingFile name="CoreLogApndr" fileName="${install_home}/common/log/finbranch/FINCORE_LOG.log" append="true" 
+        	filePattern="${install_home}/common/log/finbranch/FINCORE_$${date:yyyy-MM}/LOG-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyyMMdd 'T' HH:mm:ss.SSSZ} [%t - %T] %pid %-5level %msg%n%rException" />
+                 <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+       <DefaultRolloverStrategy>
+        <Delete basePath="${install_home}/common/log/finbranch" maxDepth="2">
+          <IfFileName glob="*/*.log.gz" />
+          <IfLastModified age="30d" />
+        </Delete>
+      </DefaultRolloverStrategy>  
+        </RollingFile>
+
+      <RollingFile name="UXLogApndr" fileName="${install_home}/common/log/finbranch/FINCORE_UXLog.log" append="true" 
+        	filePattern="${install_home}/common/log/finbranch/FINCORE_$${date:yyyy-MM}/UXLog-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyyMMdd 'T' HH:mm:ss.SSSZ} [%t - %T] %pid %msg%n%rException" />
+                 <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+       <DefaultRolloverStrategy>
+        <Delete basePath="${install_home}/common/log/finbranch" maxDepth="2">
+          <IfFileName glob="*/*.log.gz" />
+          <IfLastModified age="30d" />
+        </Delete>
+      </DefaultRolloverStrategy>  
+        </RollingFile>
+
+		<RollingFile name="SecureFilterApndr" fileName="${install_home}/common/log/finbranch/FINCORE_SecureFilter.log" append="true" 
+        	filePattern="${install_home}/common/log/finbranch/FINCORE_$${date:yyyy-MM}/ConnPool-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyyMMdd 'T' HH:mm:ss.SSSZ} [%t - %T] %pid %msg%n%rException" />
+                 <Policies>
+        <SizeBasedTriggeringPolicy size="10 MB"/>
+      </Policies>
+       <DefaultRolloverStrategy>
+        <Delete basePath="${install_home}/common/log/finbranch" maxDepth="2">
+          <IfFileName glob="*/*.log.gz" />
+          <IfLastModified age="30d" />
+        </Delete>
+      </DefaultRolloverStrategy>  
+        </RollingFile>
+		
+		<RollingFile name="SSOClient" fileName="${install_home}/common/log/fininfra/SSOClient.log" append="true"
+        	filePattern="${install_home}/common/log/fininfra/$${date:yyyy-MM}/SSOClient-%d{MM-dd-yyyy}-%i.log.gz">
+           <PatternLayout pattern="%d{yyyyMMdd'T'HH:mm:ss.SSSZ} [%t - %T] %pid %-5level [bankID:%X{bankID}][userID:%X{userID}][xRefID:%X{xRefID}] [%C{1}:%M:%L] %maxLen{%m}{2048}%n%rException" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="5 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${install_home}/common/log/fininfra" maxDepth="2">
+				<IfFileName glob="*/*.log.gz" />
+				<IfLastModified age="15d" />
+				</Delete>
+			</DefaultRolloverStrategy>  
+        </RollingFile>
+        <RollingFile name="FDMAClient" fileName="${install_home}/common/log/fininfra/FDMAClient.log" append="true" 
+        	filePattern="${install_home}/common/log/fininfra/$${date:yyyy-MM}/FDMAClient-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyyMMdd'T'HH:mm:ss.SSSZ} [%t - %T] %pid %-5level [bankID:%X{bankID}][userID:%X{userID}][xRefID:%X{xRefID}] [%C{1}:%M:%L] %maxLen{%m}{2048}%n%rException" />
+            <Policies>
+				<SizeBasedTriggeringPolicy size="5 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${install_home}/common/log/fininfra" maxDepth="2">
+				<IfFileName glob="*/*.log.gz" />
+				<IfLastModified age="15d" />
+				</Delete>
+			</DefaultRolloverStrategy>  
+        </RollingFile>
+        <RollingFile name="RIClient" fileName="${install_home}/common/log/fininfra/RIClient.log" append="true" 
+        	filePattern="${install_home}/common/log/fininfra/$${date:yyyy-MM}/RIClient-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyyMMdd'T'HH:mm:ss.SSSZ} [%t - %T] %pid %-5level [bankID:%X{bankID}][userID:%X{userID}][xRefID:%X{xRefID}] [%C{1}:%M:%L] %maxLen{%m}{2048}%n%rException" />
+            <Policies>
+				<SizeBasedTriggeringPolicy size="5 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${install_home}/common/log/fininfra" maxDepth="2">
+				<IfFileName glob="*/*.log.gz" />
+				<IfLastModified age="15d" />
+				</Delete>
+			</DefaultRolloverStrategy>  
+        </RollingFile>
+		<RollingFile name="FLS" fileName="${install_home}/common/log/fininfra/FLS.log" append="true" 
+        	filePattern="${install_home}/common/log/fininfra/$${date:yyyy-MM}/FLS-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyyMMdd'T'HH:mm:ss.SSSZ} [%t - %T] %pid %-5level [bankID:%X{bankID}][userID:%X{userID}][xRefID:%X{xRefID}] [%C{1}:%M:%L] %maxLen{%m}{2048}%n%rException" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="5 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${install_home}/common/log/fininfra" maxDepth="2">
+				<IfFileName glob="*/*.log.gz" />
+				<IfLastModified age="15d" />
+				</Delete>
+			</DefaultRolloverStrategy>  
+        </RollingFile>
+	    <RollingFile name="FinRulezAudit" fileName="${install_home}/common/log/fininfra/FinRulezAudit.log" append="true"
+        	filePattern="${install_home}/common/log/fininfra/$${date:yyyy-MM}/FinRulezAudit-%d{MM-dd-yyyy}-%i.log.gz">
+           <PatternLayout pattern="%d{yyyyMMdd'T'HH:mm:ss.SSSZ} [%t - %T] %pid %-5level [bankID:%X{bankID}][userID:%X{userID}][xRefID:%X{xRefID}] [%C{1}:%M:%L] %maxLen{%m}{2048}%n%rException" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="5 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${install_home}/common/log/fininfra" maxDepth="2">
+				<IfFileName glob="*/*.log.gz" />
+				<IfLastModified age="15d" />
+				</Delete>
+			</DefaultRolloverStrategy>  
+        </RollingFile>
+		<RollingFile name="FinRulezDeployer" fileName="${install_home}/common/log/fininfra/FinRulezDeployer.log" append="true"
+        	filePattern="${install_home}/common/log/fininfra/$${date:yyyy-MM}/FinRulezDeployer-%d{MM-dd-yyyy}-%i.log.gz">
+           <PatternLayout pattern="%d{yyyyMMdd'T'HH:mm:ss.SSSZ} [%t - %T] %pid %-5level [bankID:%X{bankID}][userID:%X{userID}][xRefID:%X{xRefID}] [%C{1}:%M:%L] %maxLen{%m}{2048}%n%rException" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="5 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${install_home}/common/log/fininfra" maxDepth="2">
+				<IfFileName glob="*/*.log.gz" />
+				<IfLastModified age="15d" />
+				</Delete>
+			</DefaultRolloverStrategy>   
+        </RollingFile>
+        <RollingRandomAccessFile name="RFDebugLogger" fileName="${install_home}/common/log/finint/fcoremb/ciDebugLog.log" filePattern="${install_home}/common/log/finint/fcoremb/ciDebugLog-%d{yyyy-MM-dd}-%i.log_bkp" immediateFlush = "true">
+            <PatternLayout pattern="%msg"/>
+			<Filters>
+				<ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+				<ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+				<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+                <SizeBasedTriggeringPolicy size="100000 kB"/>
+            </Policies>
+			<DefaultRolloverStrategy max="2000"/>
+        </RollingRandomAccessFile>
+		<RollingRandomAccessFile name="RFEventLogger" fileName="${install_home}/common/log/finint/fcoremb/ciEventLog.log" filePattern="${install_home}/common/log/finint/fcoremb/ciEventLog-%d{yyyy-MM-dd}-%i.log_bkp" immediateFlush = "true">
+            <PatternLayout pattern="%msg"/>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+				<ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+                <SizeBasedTriggeringPolicy size="100000 kB"/>
+            </Policies>
+			<DefaultRolloverStrategy max="2000"/>
+        </RollingRandomAccessFile>
+		<RollingRandomAccessFile name="RFErrorLogger" fileName="${install_home}/common/log/finint/fcoremb/ciErrorLog.log" filePattern="${install_home}/common/log/finint/fcoremb/ciErrorLog-%d{yyyy-MM-dd}-%i.log_bkp" immediateFlush = "true">
+            <PatternLayout pattern="%msg"/>
+            	<Filters>
+                	<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+				</Filters>
+			<Policies>
+                <SizeBasedTriggeringPolicy size="100000 kB"/>
+            </Policies>
+			<DefaultRolloverStrategy max="2000"/>
+        </RollingRandomAccessFile>
+		<RollingRandomAccessFile name="RFInstrumentationLogger" fileName="${install_home}/common/log/finint/fcoremb/instrumentation.log" filePattern="${install_home}/common/log/finint/fcoremb/instrumentation-%d{yyyy-MM-dd}-%i.log_bkp" immediateFlush = "true">
+            <PatternLayout pattern="%msg"/>
+			<Filters>
+				<ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+				<ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+			</Filters>
+			<Policies>
+                <SizeBasedTriggeringPolicy size="100000 kB"/>
+            </Policies>
+			<DefaultRolloverStrategy max="2000"/>
+        </RollingRandomAccessFile>
+		<RollingRandomAccessFile name="KCInstrumentationLogger" fileName="${install_home}/common/log/finint/fcoremb/instrumentation.log" filePattern="${install_home}/common/log/finint/fcoremb/instrumentation-%d{yyyy-MM-dd}-%i.log_bkp" immediateFlush = "true">
+            <PatternLayout pattern="%msg"/>
+			<Filters>
+				<ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+				<ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+			</Filters>
+			<Policies>
+                <SizeBasedTriggeringPolicy size="100000 kB"/>
+            </Policies>
+			<DefaultRolloverStrategy max="2000"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+		<Root level="${RootLog_Level}" additivity="false">
+		  <AppenderRef ref="appender-Console"/>
+		</Root>
+        <Logger name="ConnPool" level="${ConnPool_Level}" additivity="false" includeLocation="true">
+            <AppenderRef ref="ConnPoolApndr"/>
+			<AppenderRef ref="appender-Console"/>
+        </Logger>
+        <Logger name="CoreLog" level="${CoreLog_Level}" additivity="false" includeLocation="true">
+            <AppenderRef ref="CoreLogApndr"  />
+			<AppenderRef ref="appender-Console"/>
+        </Logger>
+        <Logger name="UXLog" level="${UXLog_Level}" additivity="false" includeLocation="true">
+            <AppenderRef ref="UXLogApndr"  />
+			<AppenderRef ref="appender-Console"/>
+        </Logger>
+        <Logger name="SecureFilter" level="${SecureFilter_Level}" additivity="false" includeLocation="true">
+            <AppenderRef ref="SecureFilterApndr"  />
+			<AppenderRef ref="appender-Console"/>
+        </Logger>	
+	    <Logger name="Fininfra.SSOClientLogger" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="SSOClient"/>
+        </Logger>
+        <Logger name="Fininfra.FDMAClientLogger" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="FDMAClient"/>
+        </Logger>
+        <Logger name="Fininfra.RIClientLogger" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="RIClient"/>
+        </Logger>
+		    <Logger name="Fininfra.FinRulezDeployerLogger" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="FinRulezDeployer"/>
+        </Logger>
+		<Logger name="Fininfra.FLSLogger" level="DEBUG" additivity="false" includeLocation="true">
+            <AppenderRef ref="FLS" />
+        </Logger>
+		<Logger name="Fininfra.FinRulezAuditLogger" level="ERROR" additivity="false" includeLocation="true">
+            <AppenderRef ref="appender-Console" />
+        </Logger>
+        <AsyncLogger name="fi_fcoremb" level="${fi_LogLevel}" additivity="false">
+            <appender-ref ref="RFDebugLogger"/>
+            <appender-ref ref="RFEventLogger"/>
+        </AsyncLogger>
+        <AsyncLogger name="fi_fcoremb_instrumentation" level="${fi_LogLevel}" additivity="false">
+                        <appender-ref ref="KCInstrumentationLogger"/>
+                        <appender-ref ref="RFInstrumentationLogger"/>
+        </AsyncLogger>
+        <Logger name="fi_fcoremb_error" level="${fi_LogLevel}" additivity="false">
+        	<appender-ref ref="RFErrorLogger"/>
+        </Logger>
+    </Loggers>
+</Configuration>
